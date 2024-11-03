@@ -90,8 +90,8 @@ No! Summit automatically gets them for you.
 
 ### App Version
 ```
-var appVersion: Double {
-    return Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? Double ?? 1.0
+var appVersion: String {
+    return Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown Version"
 }
 ```
 
