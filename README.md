@@ -126,3 +126,5 @@ Enjoy.
 
 All of these should work 100% fine with Summit, I just didn't want to include this logic all built in as it would make the package larger and some developers may not want or need it.
 
+<sub>Summit requires macOS 14.0 Sonoma or newer to be your deployment target. I probably could've adapted it to support macOS Ventura and Monterey, but laziness prevailed.</sub>
+
