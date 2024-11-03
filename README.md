@@ -3,6 +3,10 @@
 <img src="https://github.com/forcequitOS/Summit/blob/main/Summit%20Demo.png?raw=true" alt="A small screenshot showcasing Summit's About Screen" width="35%">
 Now you too can show off your amazing app icons while looking like a native Apple app!
 
+Requires macOS 14.0 Sonoma or later
+
+<sub>I'm 90% sure I could've adapted it to support macOS Ventura as well, but even Sonoma is pushing it with compatibility checks. macOS Monterey is also probably something I could have added support for if I felt like it.</sub>
+
 # Credits:
 [r/SwiftUI](https://reddit.com/r/SwiftUI) - 100% helped me figure out how to align stuff properly, eternally grateful.
 
@@ -124,6 +128,4 @@ var xcodeBuild: String {
 Enjoy.
 
 All of these should work 100% fine with Summit, I just didn't want to include this logic all built in as it would make the package larger and some developers may not want or need it.
-
-<sub>Summit requires macOS 14.0 Sonoma or newer to be your deployment target. I probably could've adapted it to support macOS Ventura and Monterey, but laziness prevailed.</sub>
 
