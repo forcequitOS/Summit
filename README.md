@@ -15,6 +15,9 @@ Various people on StackOverflow - Tons of stuff.
 Here's a demo containing every single possible thing Summit is capable of, and the optimal way to implement it:
 
 ```
+import SwiftUI
+import Summit
+
 @main
 struct Summit_DemoApp: App {
     @Environment(\.openWindow) private var openWindow
