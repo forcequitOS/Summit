@@ -90,36 +90,35 @@ No! Summit automatically gets them for you.
 
 ### App Version
 ```
-    var appVersion: String {
-        return Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown Version"
-    }
+var appVersion: Double {
+    return Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? Double ?? 1.0
+}
 ```
 
 ### App Build
 ```
-    var appBuild: String? {
-        return Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
-    }
+var appBuild: String? {
+    return Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
+}
 ```
 
 ### Xcode Version
 ```
-    var xcodeVersion: String? {
-        guard let dtxcodeString = Bundle.main.object(forInfoDictionaryKey: "DTXcode") as? String,
-              let dtxcode = Int(dtxcodeString) else { return nil }
-        
-        let major = dtxcode / 100
-        let minor = (dtxcode % 100) / 10
-        return "Xcode \(major).\(minor)"
-    }
+var xcodeVersion: String {
+    guard let dtxcodeString = Bundle.main.object(forInfoDictionaryKey: "DTXcode") as? String,
+          let dtxcode = Int(dtxcodeString) else { return "Unknown" }
+    let major = dtxcode / 100
+    let minor = (dtxcode % 100) / 10
+    return "\(major).\(minor)"
+}
 ```
 
 ### Xcode Build
 
 ```
-    var xcodeBuild: String? {
-      Bundle.main.object(forInfoDictionaryKey: "DTXcodeBuild") as? String
-  }
+var xcodeBuild: String {
+    Bundle.main.object(forInfoDictionaryKey: "DTXcodeBuild") as? String ?? "???"
+}
 ```
 
 Enjoy.
