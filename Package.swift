@@ -9,13 +9,13 @@ let package = Package(
     products: [
         .library(
             name: "Summit",
-            targets: ["Summit"]
-        ),
+            targets: ["Summit"]),
     ],
     targets: [
         .target(
             name: "Summit",
-            dependencies: []
+            path: "Sources"
         ),
-    ]
+    ],
+    swiftLanguageVersions: [.v5]
 )
