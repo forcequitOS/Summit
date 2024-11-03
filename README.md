@@ -1,6 +1,7 @@
 # Summit
 ### Because everyone deserves great About screens.
 <img src="https://github.com/forcequitOS/Summit/blob/main/Summit%20Demo.png?raw=true" alt="A small screenshot showcasing Summit's About Screen" width="35%">
+Now you too can show off your amazing app icons while looking like a native Apple app!
 
 # Credits:
 [r/SwiftUI](https://reddit.com/r/SwiftUI) - 100% helped me figure out how to align stuff properly, eternally grateful.
