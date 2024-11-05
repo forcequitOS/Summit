@@ -1,42 +1,42 @@
 import SwiftUI
 
-// The main view for Summit
+// Summit's main view (obviously.)
 public struct SummitView: View {
-    // Variable initialization, you know the drill.
+    // Variable initialization, you still know the drill)
     private let appIcon: NSImage
     private let appName: String
     private let links: [ButtonLink]
-    private let fields: [Field]
-    private let selectableItems: [SelectableItem]
-    private let minorText: String
+    private let fields: [any SummitFieldItem]
+    private let subHeading: String
+    private let multiSubheading: MultiSubheading?
     private let windowWidth: CGFloat
     private let windowHeight: CGFloat
     private let footers: [Footer]
-    private let footerLinks: [FooterLink]
-
     public init(links: [ButtonLink] = [],
-                fields: [Field] = [],
-                selectableItems: [SelectableItem] = [],
+                fields: [any SummitFieldItem] = [],
                 footers: [Footer] = [],
                 footerLinks: [FooterLink] = [],
-                minorText: String = "",
+                subHeading: String = "",
+                multiSubheading: MultiSubheading? = nil,
                 windowWidth: CGFloat = 280,
                 windowHeight: CGFloat = 425
     ) {
-        // Auto app icon fetching
+        // Automatic app icon fetching
         self.appIcon = NSWorkspace.shared.icon(forFile: Bundle.main.bundlePath)
-        // Auto app name fetching
+        // Automatic app name fetching
         self.appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "This App"
         self.links = links
         self.fields = fields
-        self.selectableItems = selectableItems
-        self.minorText = minorText
+        self.subHeading = subHeading
+        self.multiSubheading = multiSubheading
         self.windowWidth = windowWidth
         self.windowHeight = windowHeight
         self.footers = footers
-        self.footerLinks = footerLinks
+        
+        // Crashes your app if you try to use both a subHeading AND a multiSubheading (I literally warn you of this in the readme, do better next time.)
+        assert(subHeading.isEmpty || multiSubheading == nil, "Cannot use both subHeading and multiSubheading simultaneously")
     }
-
+    
     // The big view.
     public var body: some View {
         ZStack {
@@ -44,33 +44,38 @@ public struct SummitView: View {
             VisualEffectView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ignoresSafeArea()
+            
             VStack(alignment: .center, spacing: 5) {
-                // App icon display, 150x150
+                // Your beautiful app icon is displayed right here, at 150x150
                 Image(nsImage: appIcon)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 150, height: 150)
                 
-                // App name display, big and bold (and selectable!)
+                // Big, bold, and selectable application name display
                 Text(appName)
                     .font(.title)
                     .fontWeight(.bold)
                     .textSelection(.enabled)
                 
-                // Small text under the app name, optional of course
-                Text(minorText)
-                    .font(.footnote)
-                    .foregroundStyle(.tertiary)
-                    .textSelection(.enabled)
-                    .padding(.bottom, 10)
+                // Your subHeading (or multiSubheading, I don't judge) goes here
+                if let duo = multiSubheading {
+                    duo
+                } else if !subHeading.isEmpty {
+                    Text(subHeading)
+                        .font(.footnote)
+                        .foregroundStyle(.tertiary)
+                        .textSelection(.enabled)
+                }
                 
-                // All of the main Fields and SelectableItems here
+                // Manual padding addition (Since the subHeading is handled differently this time)
+                Spacer()
+                    .frame(height: 10)
+                
+                // All of your Fields and MultiFields are shown right here, no limit to how many you can have.
                 Form {
-                    ForEach(fields, id: \.label) { field in
-                        SummitLabel(label: field.label, value: field.value)
-                    }
-                    ForEach(selectableItems.indices, id: \.self) { index in
-                        selectableItems[index]
+                    ForEach(Array(fields.enumerated()), id: \.1.id) { _, field in
+                        AnyView(field)
                     }
                 }
                 .padding(.bottom, 20)
@@ -84,37 +89,33 @@ public struct SummitView: View {
                 }
                 .padding(.bottom, 10)
                 
-                // All of the footer text and footer links are here, 2 footer links max and 3 footers max
+                // Your footers, with links or not, go right here, and you can have a total of 4 of them (combined)
                 VStack {
-                    ForEach(footerLinks.prefix(2)) { footerLink in
-                        Link(footerLink.label, destination: footerLink.url)
-                            .font(.footnote)
-                            .foregroundStyle(.tertiary)
-                            .multilineTextAlignment(.center)
-                            .underline()
-                    }
-                    ForEach(footers.prefix(3)) { footer in
-                        Text(footer.text)
-                            .font(.footnote)
-                            .foregroundStyle(.tertiary)
-                            .multilineTextAlignment(.center)
+                    ForEach(Array(footers.prefix(4)), id: \.content.id) { footer in
+                        AnyView(footer.content)
                     }
                 }
             }
             .padding()
-            // Centers window upon starting
+            // Centers the window upon opening
             .onAppear {
                 if let window = NSApplication.shared.windows.first(where: { $0.identifier?.rawValue == "about" }) {
                     window.center()
                 }
             }
         }
-        // Limits window size (As it shouldn't be resizable)
+        // Limits view sizing (as it shouldn't be resizable, your app has to cooperate with me here though by setting .windowResizability)
         .frame(width: windowWidth, height: windowHeight)
         // Uses the proper window dragging gesture extension (Only on macOS Sequoia and later!)
         .applyWindowDragGesture()
-        // Avoids restoring the window upon your app closing
+        // Disables window restoration using the 272nd extension of the day
         .willRestore(false)
+        // Disables the "minimize window" button, as it isn't enabled on the actual About This Mac window
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.willUpdateNotification), perform: { _ in
+            for window in NSApplication.shared.windows {
+                window.standardWindowButton(.miniaturizeButton)?.isEnabled = false
+            }
+        })
     }
 }
 
@@ -145,7 +146,7 @@ struct VisualEffectView: NSViewRepresentable {
     }
 }
 
-// Labels used for the Fields
+// Labels used for Fields and MultiFields
 struct SummitLabel: View {
     let label: String
     let value: String
@@ -155,31 +156,6 @@ struct SummitLabel: View {
             Text(value)
                 .foregroundStyle(.secondary)
                 .textSelection(.enabled)
-        }
-        .font(.subheadline)
-    }
-}
-
-// Labels used for the very similar, SelectableItems
-public struct SelectableItem: View {
-    @State private var isSelected: Bool = false
-    private let label: String
-    private let valueOne: String
-    private let valueTwo: String
-
-    public init(label: String, valueOne: String, valueTwo: String) {
-        self.label = label
-        self.valueOne = valueOne
-        self.valueTwo = valueTwo
-    }
-
-    public var body: some View {
-        LabeledContent(label) {
-            Text(isSelected ? valueTwo : valueOne)
-                .foregroundStyle(.secondary)
-                .onTapGesture {
-                    isSelected.toggle()
-                }
         }
         .font(.subheadline)
     }
@@ -217,8 +193,68 @@ public struct ButtonLink: Identifiable {
     }
 }
 
-// Sets up a structure for all fields
-public struct Field: Identifiable {
+// Sets up a structure for all footers (we're gonna be here for a while aren't we)
+public struct Footer: ExpressibleByStringLiteral {
+    let content: any SummitFooterItem
+    public init(stringLiteral value: String) {
+        self.content = TextFooter(label: value)
+    }
+    public init(text: String) {
+        self.content = TextFooter(label: text)
+    }
+    // The only actual FooterLink related thing here.
+    public init(label: String, url: URL) {
+        self.content = FooterLink(label: label, url: url)
+    }
+    public init(unicodeScalarLiteral value: String) {
+        self.content = TextFooter(label: value)
+    }
+    public init(extendedGraphemeClusterLiteral value: String) {
+        self.content = TextFooter(label: value)
+    }
+}
+
+// Sets up a whole struct for all FooterLinks
+public struct FooterLink: SummitFooterItem {
+    public let id = UUID()
+    let label: String
+    let url: URL
+    
+    public var body: some View {
+        Link(label, destination: url)
+            .font(.footnote)
+            .foregroundStyle(.tertiary)
+            .multilineTextAlignment(.center)
+            .underline()
+    }
+}
+
+// Sets up a whole struct for all REGULAR Footers with only text in them
+public struct TextFooter: SummitFooterItem {
+    public let id = UUID()
+    let label: String
+    
+    public var body: some View {
+        Text(label)
+            .font(.footnote)
+            .foregroundStyle(.tertiary)
+            .multilineTextAlignment(.center)
+    }
+}
+
+// Common protocol for both Footer varieties
+public protocol SummitFooterItem: View {
+    var id: UUID { get }
+}
+
+// Common protocol for both Field varieties
+public protocol SummitFieldItem: View {
+    var id: UUID { get }
+    var label: String { get }
+}
+
+// The actual struct for regular Fields to make it conform to SummitFieldItem
+public struct Field: SummitFieldItem {
     public let id = UUID()
     public let label: String
     public let value: String
@@ -227,26 +263,101 @@ public struct Field: Identifiable {
         self.label = label
         self.value = value
     }
-}
-
-// Sets up a structure for all footers (we're gonna be here for a while aren't we)
-public struct Footer: Identifiable {
-    public let id = UUID() // Ensure each custom field has a unique identifier
-    public let text: String // Label for the field
-
-    public init(text: String) {
-        self.text = text
+    
+    public var body: some View {
+        SummitLabel(label: label, value: value)
     }
 }
 
-// Sets up a structure for all linkable footers (Okay that wasn't too bad.)
-public struct FooterLink: Identifiable {
-    public let id = UUID() // Ensure each custom field has a unique identifier
-    public let label: String // Label for the field
-    public let url: URL
+// The new MultiSubheading struct for multiple values (Goodness gracious this is going to take forever)
+public struct MultiSubheading: View {
+    private let values: [Int: String]
+    @State private var currentIndex: Int = 1
+    
+    public init(_ values: [Int: String]) {
+        self.values = values
+    }
+    public init(values: String...) {
+        var dict = [Int: String]()
+        for (index, value) in values.enumerated() {
+            dict[index + 1] = value
+        }
+        self.values = dict
+    }
+    public init(numbered values: (Int, String)...) {
+        var dict = [Int: String]()
+        for (index, value) in values {
+            dict[index] = value
+        }
+        self.values = dict
+    }
+    private func nextIndex() -> Int {
+        let sortedIndices = values.keys.sorted()
+        guard let currentPosition = sortedIndices.firstIndex(of: currentIndex),
+              let nextValue = sortedIndices[safe: currentPosition + 1] else {
+            return sortedIndices.first ?? 1
+        }
+        return nextValue
+    }
+    public var body: some View {
+        Text(values[currentIndex] ?? "")
+            .font(.footnote)
+            .foregroundStyle(.tertiary)
+            .onTapGesture {
+                currentIndex = nextIndex()
+            }
+    }
+}
 
-    public init(label: String, url: URL) {
+// MultiField (Now with indefinite values and tons of other minor changes!)
+public struct MultiField: SummitFieldItem {
+    public let id = UUID()
+    public let label: String
+    private let values: [Int: String]
+    @State private var currentIndex: Int = 1
+    public init(label: String, values: [Int: String]) {
         self.label = label
-        self.url = url
+        self.values = values
+    }
+    public init(label: String, values: String...) {
+        self.label = label
+        var dict = [Int: String]()
+        for (index, value) in values.enumerated() {
+            dict[index + 1] = value
+        }
+        self.values = dict
+    }
+    public init(label: String, numbered values: (Int, String)...) {
+        self.label = label
+        var dict = [Int: String]()
+        for (index, value) in values {
+            dict[index] = value
+        }
+        self.values = dict
+    }
+    private func nextIndex() -> Int {
+        let sortedIndices = values.keys.sorted()
+        guard let currentPosition = sortedIndices.firstIndex(of: currentIndex),
+              let nextValue = sortedIndices[safe: currentPosition + 1] else {
+            return sortedIndices.first ?? 1
+        }
+        return nextValue
+    }
+    public var body: some View {
+        LabeledContent(label) {
+            Text(values[currentIndex] ?? "")
+                .foregroundStyle(.secondary)
+                .onTapGesture {
+                    currentIndex = nextIndex()
+                }
+        }
+        .font(.subheadline)
+    }
+}
+
+// Helper extension for safe array access <--- I do not know wtf that means
+private extension Array {
+    subscript(safe index: Index) -> Element? {
+        indices.contains(index) ? self[index] : nil
     }
 }
