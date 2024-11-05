@@ -306,6 +306,10 @@ public struct MultiSubheading: View {
             .onTapGesture {
                 currentIndex = nextIndex()
             }
+            // Sets index to 1 to prevent it from being remembered when reopening window
+            .onAppear {
+                currentIndex = 1
+            }
     }
 }
 
@@ -352,6 +356,10 @@ public struct MultiField: SummitFieldItem {
                 }
         }
         .font(.subheadline)
+        .onAppear {
+            // Sets index to 1 to prevent it from being remembered when reopening window
+            currentIndex = 1
+        }
     }
 }
 
