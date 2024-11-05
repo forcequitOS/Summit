@@ -3,20 +3,22 @@
 <img src="https://github.com/forcequitOS/Summit/blob/main/Summit%20Demo.png?raw=true" alt="A small screenshot showcasing Summit's About Screen" width="35%">
 Now you too can show off your amazing app icons while looking like a native Apple app!
 
-Requires macOS 14.0 Sonoma or later
+**Requires macOS 13.0 Ventura or later.**
 
-<sub>I'm 90% sure I could've adapted it to support macOS Ventura as well, but even Sonoma is pushing it with compatibility checks. macOS Monterey is also probably something I could have added support for if I felt like it.</sub>
+<sub>I'm sorry, macOS Monterey. Your time is over.</sub>
 
 # Credits:
 [r/SwiftUI](https://reddit.com/r/SwiftUI) - 100% helped me figure out how to align stuff properly, eternally grateful.
 
 [ChatGPT](https://chatgpt.com) - Helped me figure out how to make this into a Swift Package, 95% of the other work was done by me
 
+[Claude](https://claude.ai) - Helped me merge a lot of stuff together for the 1.1.0 update because I don't know what I'm doing lol
+
 Various people on StackOverflow - Tons of stuff.
 
 # Usage:
 
-Here's a demo containing every single possible thing Summit is capable of, and the optimal way to implement it:
+Here's a demo containing almost every single possible thing Summit is capable of, and the optimal way to implement it:
 
 ```
 import SwiftUI
@@ -32,7 +34,6 @@ struct Summit_DemoApp: App {
         .commands {
             CommandGroup(replacing: CommandGroupPlacement.appInfo) {
                 Button(action: {
-                    // Open the "about" window
                     openWindow(id: "about")
                 }, label: {
                     Text("About This App")
@@ -42,24 +43,20 @@ struct Summit_DemoApp: App {
         Window("About This App", id: "about") {
             SummitView(
                 links: [
-                    ButtonLink(label: "Example Link 1", url: URL(string: "https://example.com")!),
-                    ButtonLink(label: "Example Link 2", url: URL(string: "https://example.com/")!)
+                    ButtonLink(label: "Visit Google...", url: URL(string: "https://google.com")!),
+                    ButtonLink(label: "Visit Apple...", url: URL(string: "https://apple.com")!)
                 ],
                 fields: [
-                    Field(label: "Field 1", value: "Value 1"),
-                    Field(label: "Repeat This!", value: "Truly.")
-                ],
-                selectableItems: [
-                    SelectableItem(label: "Version", valueOne: "Version", valueTwo: "Version (Build)"),
+                    Field(label: "A Field", value: "A Value"),
+                    MultiField(label: "A MultiField", values: "Click me!", "I change values", "Multiple times, even!", "Please stop now.", "I have a family."),
+                    Field(label: "Mix and match", value: "Fields and MultiFields")
                 ],
                 footers: [
-                    Footer(text: "© Your Name 2024"),
-                    Footer(text: "All rights reserved!")
+                    Footer(label: "Add links to your footers", url: URL(string: "https://example.com")!),
+                    Footer(text: "Or just plain text like this"),
+                    "Or even simpler, like this!"
                 ],
-                footerLinks: [
-                    FooterLink(label: "All Code Licenses", url: URL(string: "https://example.com")!)
-                ],
-                minorText: "Crazy.",
+                multiSubheading: MultiSubheading(values: "I'm a multiSubheading", "That was cool", "Okay, you can stop now."),
                 windowWidth: 280,
                 windowHeight: 425
             )
@@ -72,17 +69,17 @@ struct Summit_DemoApp: App {
 
 # Okay so what is everything?
 
-Links: Buttons. You can have up to two. Each has a label and a URL to point to.
+Links / ButtonLinks: Buttons. You can have up to two. Each has a label and a URL to point to.
 
 Fields: These are the core of everything. Each has a label and a value.
 
-SelectableItems: These are Fields, except instead of having selectable text, when you click them, they change values. Useful for versions with build numbers.
+MultiFields: A variety of field, they have a constant label, but they can change values when clicked. You define the amount of values now!
 
-Footers: These only contain text and are displayed at the bottom of the about window, you can have up to three of these.
+Footers: These contain either text or a link to a webpage (your choice) and you can have up to 4 of them
 
-FooterLinks: These look like footers, but are actually links. They're underlined, and require a label and URL value. You can have up to two of those.
+subHeading: It's just the small text that displays underneath your app's name. You can use one of these, OR one MultiSubheading, not both.
 
-minorText: It's just the small text that displays underneath your app name
+MultiSubheading: A subHeading that changes values when clicked, similar to a MultiField in purpose. Remember, as stated above, only one subHeading OR a MultiHeading, you can't have both.
 
 windowWidth and windowHeight: Self explanatory.
 
@@ -125,7 +122,7 @@ var xcodeBuild: String {
 }
 ```
 
-Enjoy.
+Enjoy. Now you can be as lazy as you wish.
 
 All of these should work 100% fine with Summit, I just didn't want to include this logic all built in as it would make the package larger and some developers may not want or need it.
 
