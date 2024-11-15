@@ -5,6 +5,8 @@ Now you too can show off your amazing app icons while looking like a native Appl
 
 **Requires macOS 13.0 Ventura or later.**
 
+*(With enhanced functionality on macOS 15.0 Sequoia and later.)*
+
 <sub>I'm sorry, macOS Monterey. Your time is over.</sub>
 
 # Credits:
@@ -73,15 +75,15 @@ Links / ButtonLinks: Buttons. You can have up to two. Each has a label and a URL
 
 Fields: These are the core of everything. Each has a label and a value.
 
-MultiFields: A variety of field, they have a constant label, but they can change values when clicked. You define the amount of values now!
+MultiFields: A variety of field, they have a constant label, but they can change values when clicked. You define the amount of values now! (With labels being modifiable soon!)
 
 Footers: These contain either text or a link to a webpage (your choice) and you can have up to 4 of them
 
 subHeading: It's just the small text that displays underneath your app's name. You can use one of these, OR one MultiSubheading, not both.
 
-MultiSubheading: A subHeading that changes values when clicked, similar to a MultiField in purpose. Remember, as stated above, only one subHeading OR a MultiHeading, you can't have both.
+MultiSubheading: A subHeading that changes values when clicked, similar to a MultiField in purpose. Remember, as stated above, only one subHeading OR a multiSubheading, you can't have both.
 
-windowWidth and windowHeight: Self explanatory.
+windowWidth and windowHeight: Self explanatory. These are actually optional, if you're okay with the defaults, you don't have to add them.
 
 # Do I need to provide my app name and icon manually?
 
